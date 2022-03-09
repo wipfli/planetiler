@@ -129,7 +129,7 @@ public class Generate {
     Arguments arguments = Arguments.fromArgsOrConfigFile(args);
     PlanetilerConfig planetilerConfig = PlanetilerConfig.from(arguments);
     String tag = arguments.getString("tag", "openmaptiles tag to use", "v3.12.2");
-    String base = "https://raw.githubusercontent.com/openmaptiles/openmaptiles/" + tag + "/";
+    String base = "https://raw.githubusercontent.com/wipfli/openmaptiles/tracktype/";
 
     // start crawling from openmaptiles.yaml
     // then crawl schema from each layers/<layer>/<layer>.yaml file that it references
