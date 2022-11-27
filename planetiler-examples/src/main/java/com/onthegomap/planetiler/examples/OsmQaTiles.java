@@ -7,10 +7,10 @@ import com.onthegomap.planetiler.config.Arguments;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.reader.osm.OsmElement;
 import com.onthegomap.planetiler.reader.osm.OsmSourceFeature;
+import com.onthegomap.planetiler.util.ZoomFunction;
 import java.nio.file.Path;
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
 
 /**
@@ -59,10 +59,9 @@ public class OsmQaTiles implements Profile {
     }
     reader.close();
 
-    int zoom = inArgs.getInteger("zoom", "zoom level to generate tiles at", 12);
     var args = inArgs.orElse(Arguments.of(
-      "minzoom", zoom,
-      "maxzoom", zoom,
+      "minzoom", 0,
+      "maxzoom", 14,
       "tile_warning_size_mb", 100
     ));
     String area = args.getString("area", "geofabrik area to download", "monaco");
@@ -93,9 +92,14 @@ public class OsmQaTiles implements Profile {
       if (feature != null) {
         var element = osmFeature.originalElement();
         feature
-          .setMinPixelSize(0)
-          .setPixelTolerance(0)
-          .setBufferPixels(0);
+          .setZoomRange(0, 14)
+          .setSortKey(getQRank(sourceFeature.getTag("wikidata")))
+          .setPointLabelGridSizeAndLimit(
+            12, // only limit at z12 and below
+            32, // break the tile up into 32x32 px squares
+            4 // any only keep the 4 nodes with lowest sort-key in each 32px square
+          )
+          .setBufferPixelOverrides(ZoomFunction.maxZoom(12, 32));
         for (var entry : sourceFeature.tags().entrySet()) {
           feature.setAttr(entry.getKey(), entry.getValue());
           if (entry.getKey().equals("wikidata")) {
