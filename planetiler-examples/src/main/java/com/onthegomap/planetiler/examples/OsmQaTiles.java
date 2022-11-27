@@ -93,7 +93,7 @@ public class OsmQaTiles implements Profile {
         var element = osmFeature.originalElement();
         feature
           .setZoomRange(0, 14)
-          .setSortKey(getQRank(sourceFeature.getTag("wikidata")))
+          .setSortKey(-getQRank(sourceFeature.getTag("wikidata")))
           .setPointLabelGridSizeAndLimit(
             12, // only limit at z12 and below
             32, // break the tile up into 32x32 px squares
