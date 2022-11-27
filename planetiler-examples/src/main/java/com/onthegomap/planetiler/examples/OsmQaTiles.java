@@ -61,7 +61,7 @@ public class OsmQaTiles implements Profile {
 
     var args = inArgs.orElse(Arguments.of(
       "minzoom", 0,
-      "maxzoom", 14,
+      "maxzoom", 10,
       "tile_warning_size_mb", 100
     ));
     String area = args.getString("area", "geofabrik area to download", "monaco");
@@ -88,11 +88,10 @@ public class OsmQaTiles implements Profile {
   @Override
   public void processFeature(SourceFeature sourceFeature, FeatureCollector features) {
     if (!sourceFeature.tags().isEmpty() && sourceFeature instanceof OsmSourceFeature osmFeature) {
-      var feature = sourceFeature.isPoint() && sourceFeature.hasTag("wikidata") && sourceFeature.hasTag("place") ? features.point("osm") : null;
+      var feature = sourceFeature.isPoint() && sourceFeature.hasTag("wikidata") && sourceFeature.hasTag("place") && sourceFeature.hasTag("name")? features.point("osm") : null;
       if (feature != null) {
-        var element = osmFeature.originalElement();
         feature
-          .setZoomRange(0, 14)
+          .setZoomRange(0, 10)
           .setSortKey(-getQRank(sourceFeature.getTag("wikidata")))
           .setPointLabelGridSizeAndLimit(
             12, // only limit at z12 and below
@@ -100,27 +99,9 @@ public class OsmQaTiles implements Profile {
             4 // any only keep the 4 nodes with lowest sort-key in each 32px square
           )
           .setBufferPixelOverrides(ZoomFunction.maxZoom(12, 32));
-        for (var entry : sourceFeature.tags().entrySet()) {
-          feature.setAttr(entry.getKey(), entry.getValue());
-          if (entry.getKey().equals("wikidata")) {
-            feature.setAttr("@qrank", getQRank(entry.getValue()));
-          }
-        }
-        feature
-          .setAttr("@id", sourceFeature.id())
-          .setAttr("@type", element instanceof OsmElement.Node ? "node" :
-            element instanceof OsmElement.Way ? "way" :
-            element instanceof OsmElement.Relation ? "relation" : null
-          );
-        var info = element.info();
-        if (info != null) {
-          feature
-            .setAttr("@version", info.version() == 0 ? null : info.version())
-            .setAttr("@timestamp", info.timestamp() == 0L ? null : info.timestamp())
-            .setAttr("@changeset", info.changeset() == 0L ? null : info.changeset())
-            .setAttr("@uid", info.userId() == 0 ? null : info.userId())
-            .setAttr("@user", info.user() == null || info.user().isBlank() ? null : info.user());
-        }
+        feature.setAttr("name", sourceFeature.getTag("name"));
+        feature.setAttr("@qrank", getQRank(sourceFeature.getTag("wikidata")));
+        feature.setAttr("wikidata", sourceFeature.getTag("wikidata"));
       }
     }
   }
