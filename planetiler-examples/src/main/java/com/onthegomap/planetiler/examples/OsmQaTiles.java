@@ -8,6 +8,10 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.reader.osm.OsmElement;
 import com.onthegomap.planetiler.reader.osm.OsmSourceFeature;
 import java.nio.file.Path;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * Generates tiles with a raw copy of OSM data in a single "osm" layer at one zoom level, similar to
@@ -35,12 +39,31 @@ import java.nio.file.Path;
  * </ol>
  */
 public class OsmQaTiles implements Profile {
+  static HashMap<String, String> qranks;
 
   public static void main(String[] args) throws Exception {
     run(Arguments.fromArgsOrConfigFile(args));
   }
 
   static void run(Arguments inArgs) throws Exception {
+    qranks = new HashMap<String, String>();
+
+    BufferedReader reader;
+    try {
+      reader = new BufferedReader(new FileReader("src/main/java/com/onthegomap/planetiler/examples/qrank.csv"));
+      String line = reader.readLine();
+      while (line != null) {
+        String[] parts = line.split(",");
+        qranks.put(parts[0].trim(), parts[1].trim());
+        line = reader.readLine();
+      }
+      reader.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    System.out.print(qranks);
+
     int zoom = inArgs.getInteger("zoom", "zoom level to generate tiles at", 12);
     var args = inArgs.orElse(Arguments.of(
       "minzoom", zoom,
@@ -58,13 +81,20 @@ public class OsmQaTiles implements Profile {
       .run();
   }
 
+  static int getQRank(Object wikidata) {
+    String qrank = qranks.get(wikidata.toString());
+    if (qrank == null) {
+      return 0;
+    }
+    else {
+      return Integer.parseInt(qrank);
+    }
+  }
+
   @Override
   public void processFeature(SourceFeature sourceFeature, FeatureCollector features) {
     if (!sourceFeature.tags().isEmpty() && sourceFeature instanceof OsmSourceFeature osmFeature) {
-      var feature = sourceFeature.canBePolygon() ? features.polygon("osm") :
-        sourceFeature.canBeLine() ? features.line("osm") :
-        sourceFeature.isPoint() ? features.point("osm") :
-        null;
+      var feature = sourceFeature.isPoint() && sourceFeature.hasTag("wikidata") && sourceFeature.hasTag("place") ? features.point("osm") : null;
       if (feature != null) {
         var element = osmFeature.originalElement();
         feature
@@ -73,6 +103,9 @@ public class OsmQaTiles implements Profile {
           .setBufferPixels(0);
         for (var entry : sourceFeature.tags().entrySet()) {
           feature.setAttr(entry.getKey(), entry.getValue());
+          if (entry.getKey().equals("wikidata")) {
+            feature.setAttr("@qrank", getQRank(entry.getValue()));
+          }
         }
         feature
           .setAttr("@id", sourceFeature.id())
