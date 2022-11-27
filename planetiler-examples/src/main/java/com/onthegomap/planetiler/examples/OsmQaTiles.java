@@ -48,21 +48,16 @@ public class OsmQaTiles implements Profile {
   static void run(Arguments inArgs) throws Exception {
     qranks = new HashMap<String, String>();
 
+    System.out.println("Start reading qrank.csv...");
     BufferedReader reader;
-    try {
-      reader = new BufferedReader(new FileReader("src/main/java/com/onthegomap/planetiler/examples/qrank.csv"));
-      String line = reader.readLine();
-      while (line != null) {
-        String[] parts = line.split(",");
-        qranks.put(parts[0].trim(), parts[1].trim());
-        line = reader.readLine();
-      }
-      reader.close();
-    } catch (IOException e) {
-      e.printStackTrace();
+    reader = new BufferedReader(new FileReader("src/main/java/com/onthegomap/planetiler/examples/qrank.csv"));
+    String line = reader.readLine();
+    while (line != null) {
+      String[] parts = line.split(",");
+      qranks.put(parts[0].trim(), parts[1].trim());
+      line = reader.readLine();
     }
-
-    System.out.print(qranks);
+    reader.close();
 
     int zoom = inArgs.getInteger("zoom", "zoom level to generate tiles at", 12);
     var args = inArgs.orElse(Arguments.of(
