@@ -63,7 +63,7 @@ public class QRank implements Profile {
     if (sourceFeature.isPoint() && sourceFeature.hasTag("wikidata") && sourceFeature.hasTag("name"))
     {
       features.point("qrank")
-        .setZoomRange(0, 10)
+        .setZoomRange(0, 9)
         .setSortKey(-getQRank(sourceFeature.getTag("wikidata")))
         .setPointLabelGridSizeAndLimit(
           12, // only limit at z12 and below
@@ -77,12 +77,12 @@ public class QRank implements Profile {
     if (sourceFeature.canBeLine() && sourceFeature.hasTag("boundary", "administrative") && sourceFeature.hasTag("admin_level")) {
       if (sourceFeature.hasTag("admin_level", "2")) {
         features.line("boundary-admin-2")
-          .setZoomRange(0, 8)
+          .setZoomRange(0, 7)
           .setMinPixelSize(0);
       }
       if (sourceFeature.hasTag("admin_level", "4")) {
         features.line("boundary-admin-4")
-          .setZoomRange(7, 8)
+          .setZoomRange(7, 7)
           .setMinPixelSize(0);
       }
     }
