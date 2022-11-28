@@ -34,7 +34,7 @@ public class QRank implements Profile {
 
     var args = inArgs.orElse(Arguments.of(
       "minzoom", 0,
-      "maxzoom", 12,
+      "maxzoom", 10,
       "tile_warning_size_mb", 100
     ));
     String area = args.getString("area", "geofabrik area to download", "monaco");
@@ -63,7 +63,7 @@ public class QRank implements Profile {
     if (sourceFeature.isPoint() && sourceFeature.hasTag("wikidata") && sourceFeature.hasTag("name"))
     {
       features.point("qrank")
-        .setZoomRange(0, 12)
+        .setZoomRange(0, 10)
         .setSortKey(-getQRank(sourceFeature.getTag("wikidata")))
         .setPointLabelGridSizeAndLimit(
           12, // only limit at z12 and below
@@ -77,12 +77,12 @@ public class QRank implements Profile {
     if (sourceFeature.canBeLine() && sourceFeature.hasTag("boundary", "administrative") && sourceFeature.hasTag("admin_level")) {
       if (sourceFeature.hasTag("admin_level", "2")) {
         features.line("boundary-admin-2")
-          .setZoomRange(0, 10)
+          .setZoomRange(0, 8)
           .setMinPixelSize(0);
       }
       if (sourceFeature.hasTag("admin_level", "4")) {
         features.line("boundary-admin-4")
-          .setZoomRange(7, 10)
+          .setZoomRange(7, 8)
           .setMinPixelSize(0);
       }
     }
