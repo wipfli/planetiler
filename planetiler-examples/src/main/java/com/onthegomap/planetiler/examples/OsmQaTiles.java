@@ -5,7 +5,6 @@ import com.onthegomap.planetiler.Planetiler;
 import com.onthegomap.planetiler.Profile;
 import com.onthegomap.planetiler.config.Arguments;
 import com.onthegomap.planetiler.reader.SourceFeature;
-import com.onthegomap.planetiler.reader.osm.OsmElement;
 import com.onthegomap.planetiler.reader.osm.OsmSourceFeature;
 import com.onthegomap.planetiler.util.ZoomFunction;
 import java.nio.file.Path;
@@ -61,7 +60,7 @@ public class OsmQaTiles implements Profile {
 
     var args = inArgs.orElse(Arguments.of(
       "minzoom", 0,
-      "maxzoom", 10,
+      "maxzoom", 14,
       "tile_warning_size_mb", 100
     ));
     String area = args.getString("area", "geofabrik area to download", "monaco");
@@ -88,10 +87,10 @@ public class OsmQaTiles implements Profile {
   @Override
   public void processFeature(SourceFeature sourceFeature, FeatureCollector features) {
     if (!sourceFeature.tags().isEmpty() && sourceFeature instanceof OsmSourceFeature osmFeature) {
-      var feature = sourceFeature.isPoint() && sourceFeature.hasTag("wikidata") && sourceFeature.hasTag("place") && sourceFeature.hasTag("name")? features.point("osm") : null;
+      var feature = sourceFeature.isPoint() && sourceFeature.hasTag("wikidata") && sourceFeature.hasTag("name")? features.point("osm") : null;
       if (feature != null) {
         feature
-          .setZoomRange(0, 10)
+          .setZoomRange(0, 14)
           .setSortKey(-getQRank(sourceFeature.getTag("wikidata")))
           .setPointLabelGridSizeAndLimit(
             12, // only limit at z12 and below
