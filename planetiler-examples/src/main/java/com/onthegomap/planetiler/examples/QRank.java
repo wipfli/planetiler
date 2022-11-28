@@ -34,7 +34,7 @@ public class QRank implements Profile {
 
     var args = inArgs.orElse(Arguments.of(
       "minzoom", 0,
-      "maxzoom", 14,
+      "maxzoom", 12,
       "tile_warning_size_mb", 100
     ));
     String area = args.getString("area", "geofabrik area to download", "monaco");
