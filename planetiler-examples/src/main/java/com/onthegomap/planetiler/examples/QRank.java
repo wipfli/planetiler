@@ -63,7 +63,7 @@ public class QRank implements Profile {
     if (sourceFeature.isPoint() && sourceFeature.hasTag("wikidata") && sourceFeature.hasTag("name"))
     {
       features.point("qrank")
-        .setZoomRange(0, 14)
+        .setZoomRange(0, 12)
         .setSortKey(-getQRank(sourceFeature.getTag("wikidata")))
         .setPointLabelGridSizeAndLimit(
           12, // only limit at z12 and below
@@ -72,20 +72,17 @@ public class QRank implements Profile {
         )
         .setBufferPixelOverrides(ZoomFunction.maxZoom(12, 32))
         .setAttr("name", sourceFeature.getTag("name"))
-        .setAttr("@qrank", getQRank(sourceFeature.getTag("wikidata")))
-        .setAttr("wikidata", sourceFeature.getTag("wikidata"));
+        .setAttr("@qrank", getQRank(sourceFeature.getTag("wikidata")));
     }
     if (sourceFeature.canBeLine() && sourceFeature.hasTag("boundary", "administrative") && sourceFeature.hasTag("admin_level")) {
-      System.out.println("hello");
-      System.out.println(sourceFeature.getTag("admin_level"));
       if (sourceFeature.hasTag("admin_level", "2")) {
         features.line("boundary-admin-2")
-          .setZoomRange(0, 14)
+          .setZoomRange(0, 10)
           .setMinPixelSize(0);
       }
       if (sourceFeature.hasTag("admin_level", "4")) {
         features.line("boundary-admin-4")
-          .setZoomRange(7, 14)
+          .setZoomRange(7, 10)
           .setMinPixelSize(0);
       }
     }
