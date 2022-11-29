@@ -62,7 +62,8 @@ public class QRank implements Profile {
   public void processFeature(SourceFeature sourceFeature, FeatureCollector features) {
     if (sourceFeature.isPoint() && sourceFeature.hasTag("wikidata") && sourceFeature.hasTag("name"))
     {
-      features.point("qrank")
+      var feature = features.point("qrank");
+      feature
         .setZoomRange(0, 14)
         .setSortKey(-getQRank(sourceFeature.getTag("wikidata")))
         .setPointLabelGridSizeAndLimit(
@@ -71,19 +72,9 @@ public class QRank implements Profile {
           4 // any only keep the 4 nodes with lowest sort-key in each 32px square
         )
         .setBufferPixelOverrides(ZoomFunction.maxZoom(12, 32))
-        .setAttr("name", sourceFeature.getTag("name"))
         .setAttr("@qrank", getQRank(sourceFeature.getTag("wikidata")));
-    }
-    if (sourceFeature.canBeLine() && sourceFeature.hasTag("boundary", "administrative") && sourceFeature.hasTag("admin_level")) {
-      if (sourceFeature.hasTag("admin_level", "2")) {
-        features.line("boundary-admin-2")
-          .setZoomRange(0, 7)
-          .setMinPixelSize(0);
-      }
-      if (sourceFeature.hasTag("admin_level", "4")) {
-        features.line("boundary-admin-4")
-          .setZoomRange(7, 7)
-          .setMinPixelSize(0);
+      for (var entry : sourceFeature.tags().entrySet()) {
+        feature.setAttr(entry.getKey(), entry.getValue());
       }
     }
   }
