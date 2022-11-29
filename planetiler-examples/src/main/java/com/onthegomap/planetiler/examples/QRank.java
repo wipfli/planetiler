@@ -34,7 +34,7 @@ public class QRank implements Profile {
 
     var args = inArgs.orElse(Arguments.of(
       "minzoom", 0,
-      "maxzoom", 9,
+      "maxzoom", 14,
       "tile_warning_size_mb", 100
     ));
     String area = args.getString("area", "geofabrik area to download", "monaco");
@@ -63,7 +63,7 @@ public class QRank implements Profile {
     if (sourceFeature.isPoint() && sourceFeature.hasTag("wikidata") && sourceFeature.hasTag("name"))
     {
       features.point("qrank")
-        .setZoomRange(0, 9)
+        .setZoomRange(0, 14)
         .setSortKey(-getQRank(sourceFeature.getTag("wikidata")))
         .setPointLabelGridSizeAndLimit(
           12, // only limit at z12 and below
