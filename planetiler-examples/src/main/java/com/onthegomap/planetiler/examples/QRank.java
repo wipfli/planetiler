@@ -64,7 +64,7 @@ public class QRank implements Profile {
     {
       var feature = features.point("qrank");
       feature
-        .setZoomRange(0, 14)
+        .setZoomRange(sourceFeature.hasTag("place") ? 0 : 7, 14)
         .setSortKey(-getQRank(sourceFeature.getTag("wikidata")))
         .setPointLabelGridSizeAndLimit(
           12, // only limit at z_ and below
