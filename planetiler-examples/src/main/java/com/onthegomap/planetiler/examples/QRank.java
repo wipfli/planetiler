@@ -68,10 +68,10 @@ public class QRank implements Profile {
         .setSortKey(-getQRank(sourceFeature.getTag("wikidata")))
         .setPointLabelGridSizeAndLimit(
           12, // only limit at z_ and below
-          256, // break the tile up into _x_ px squares
+          128, // break the tile up into _x_ px squares
           10 // any only keep the _ nodes with lowest sort-key in each _px square
         )
-        .setBufferPixelOverrides(ZoomFunction.maxZoom(12, 256))
+        .setBufferPixelOverrides(ZoomFunction.maxZoom(12, 128))
         .setAttr("@qrank", getQRank(sourceFeature.getTag("wikidata")));
       for (var entry : sourceFeature.tags().entrySet()) {
         feature.setAttr(entry.getKey(), entry.getValue());
