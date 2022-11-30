@@ -60,11 +60,11 @@ public class QRank implements Profile {
 
   @Override
   public void processFeature(SourceFeature sourceFeature, FeatureCollector features) {
-    if (sourceFeature.isPoint() && sourceFeature.hasTag("wikidata") && sourceFeature.hasTag("name"))
+    if (sourceFeature.isPoint() && sourceFeature.hasTag("wikidata") && sourceFeature.hasTag("name") && (sourceFeature.hasTag("place") || sourceFeature.hasTag("natural") || sourceFeature.hasTag("waterway", "waterfall")))
     {
       var feature = features.point("qrank");
       feature
-        .setZoomRange(sourceFeature.hasTag("place") ? 0 : 7, 14)
+        .setZoomRange(0, 14)
         .setSortKey(-getQRank(sourceFeature.getTag("wikidata")))
         .setPointLabelGridSizeAndLimit(
           12, // only limit at z_ and below
