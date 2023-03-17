@@ -5,16 +5,6 @@ name: Performance
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [ main ]
-
-env:
-  # For performance tests, run this branch against main with:
-  AREA: rhode island
-  RAM: 4g
-  # Also pick up a good chunk of the atlantic ocean to catch any regressions in repeated tile performance
-  # Omit to infer from .osm.pbf bounds
-  BOUNDS_ARG: "--bounds=-74.07,21.34,-17.84,43.55"
 
 jobs:
   performance:
@@ -22,6 +12,15 @@ jobs:
     runs-on: self-hosted
     timeout-minutes: 20
     continue-on-error: true
+    container:
+      image: ubuntu:22.04
+      env:
+        # For performance tests, run this branch against main with:
+        AREA: rhode island
+        RAM: 4g
+        # Also pick up a good chunk of the atlantic ocean to catch any regressions in repeated tile performance
+        # Omit to infer from .osm.pbf bounds
+        BOUNDS_ARG: "--bounds=-74.07,21.34,-17.84,43.55"
     steps:
       - name: 'Cancel previous runs'
         uses: styfle/cancel-workflow-action@0.11.0
