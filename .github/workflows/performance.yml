@@ -54,11 +54,9 @@ jobs:
           cp planetiler-dist/target/*with-deps.jar run.jar
           java -Xms${{ env.RAM }} -Xmx${{ env.RAM }} -jar run.jar --area="${{ env.AREA }}" --mbtiles=data/out.mbtiles 2>&1 | tee log
           ls -alh run.jar | tee -a log
-          mkdir -p build_info
-          cat log | strip-ansi > build-info/log.txt
+          cat log | strip-ansi > log.txt
 
       - name: 'Upload build-info'
         uses: actions/upload-artifact@v3
         with:
-          name: build-info
-          path: ./build-info
+          path: ./log.txt
