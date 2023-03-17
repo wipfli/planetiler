@@ -22,6 +22,10 @@ jobs:
         # Omit to infer from .osm.pbf bounds
         BOUNDS_ARG: "--bounds=-74.07,21.34,-17.84,43.55"
     steps:
+      - name: Install git
+        run: |
+          apt update
+          apt install -y git
       - name: 'Cancel previous runs'
         uses: styfle/cancel-workflow-action@0.11.0
         with:
