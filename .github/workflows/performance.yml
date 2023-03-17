@@ -6,6 +6,10 @@ name: Performance
 on:
   workflow_dispatch:
 
+env:
+  AREA: monaco
+  RAM: 4g
+
 jobs:
   performance:
     name: Performance Test
@@ -14,9 +18,6 @@ jobs:
     continue-on-error: true
     container:
       image: ubuntu:22.04
-      env:
-        AREA: monaco
-        RAM: 4g
     steps:
       - name: Install git
         run: |
