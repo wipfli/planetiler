@@ -73,7 +73,7 @@ jobs:
 
       - name: 'Store build info'
         run: |
-          mkdir build-info
+          mkdir -p build-info
           echo "${{ github.event.pull_request.base.sha }}" > build-info/base_sha
           echo "${{ github.sha }}" > build-info/branch_sha
           echo "${{ github.event.number }}" > build-info/pull_request_number
