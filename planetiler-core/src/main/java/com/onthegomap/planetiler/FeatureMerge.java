@@ -358,7 +358,7 @@ public class FeatureMerge {
     }
     Geometry merged = GeoUtils.createGeometryCollection(polygonGroup);
     merged = union(merged);
-    merged = unbuffer(buffer, merged);
+    // merged = unbuffer(buffer, merged);
     return merged;
   }
 

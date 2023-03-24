@@ -6,11 +6,13 @@ import com.onthegomap.planetiler.Planetiler;
 import com.onthegomap.planetiler.Profile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.config.Arguments;
+import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.reader.osm.OsmElement;
 import com.onthegomap.planetiler.reader.osm.OsmRelationInfo;
 import java.nio.file.Path;
 import java.util.List;
+
 
 /**
  * Builds a map of bike routes from ways contained in OpenStreetMap relations tagged with
@@ -104,6 +106,14 @@ public class BikeRouteOverlay implements Profile {
           .setMinPixelSize(0);
       }
     }
+    if (sourceFeature.canBePolygon() && sourceFeature.hasTag("building")) {
+      features.polygon("house")
+        .setMinZoom(10)
+        .setMinPixelSize(0);
+      features.polygon("houses")
+        .setMinZoom(10)
+        .setMinPixelSize(0);
+    }
   }
 
   /*
@@ -116,6 +126,28 @@ public class BikeRouteOverlay implements Profile {
   @Override
   public List<VectorTile.Feature> postProcessLayerFeatures(String layer, int zoom,
     List<VectorTile.Feature> items) {
+      try {
+        if ("houses".equals(layer)) {
+          double dist = 0.5;
+          if (zoom == 11) {
+            dist *= 2.0;
+          }
+          if (zoom == 12) {
+            dist *= 4.0;
+          }
+          if (zoom == 13) {
+            dist *= 8.0;
+          }
+          if (zoom == 14) {
+            dist *= 16.0;
+          }
+
+          return FeatureMerge.mergeLineStrings(FeatureMerge.mergeNearbyPolygons(items, 250, 4, dist, dist), 10, 2, 4);
+        }
+      }
+      catch (GeometryException e) {
+        return null;
+      }
     // FeatureMerge has several utilities for merging geometries in a layer that share the same tags.
     // `mergeLineStrings` combines lines with the same tags where the endpoints touch.
     // Tiles are 256x256 pixels and all FeatureMerge operations work in tile pixel coordinates.
