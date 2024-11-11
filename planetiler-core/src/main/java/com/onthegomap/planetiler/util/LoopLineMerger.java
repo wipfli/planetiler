@@ -78,12 +78,14 @@ public class LoopLineMerger {
         Edge a = node.getEdges().getFirst();
         Edge b = node.getEdges().get(1);
         mergeTwoEdges(a, b);
-        node.getEdges().clear();
       }
     }
   }
 
   private void mergeTwoEdges(Edge a, Edge b) {
+    assert a.to == b.from;
+    a.to.getEdges().remove(a);
+    b.from.getEdges().remove(b);
     List<Coordinate> coordinates = new ArrayList<>();
     coordinates.addAll(a.coordinates.reversed());
     coordinates.addAll(b.coordinates.subList(1, b.coordinates.size()));
@@ -115,8 +117,6 @@ public class LoopLineMerger {
             continue;
           }
           mergeTwoEdges(angledPair.a, angledPair.b);
-          node.getEdges().remove(angledPair.a);
-          node.getEdges().remove(angledPair.b);
           merged.add(angledPair.a);
           merged.add(angledPair.b);
         }
@@ -420,16 +420,8 @@ public class LoopLineMerger {
     }
 
     double angleTo(Edge other) {
-      if (!from.equals(other.from)) {
-        // Todo raise some error, the edges don't start at same coordinate
-        System.out.println("error start point mismatch");
-        return 0.0;
-      }
-      if (coordinates.size() < 2 || other.coordinates.size() < 2) {
-        // todo no real linestring...
-        System.out.println("error lines are points");
-        return 0.0;
-      }
+      assert from.equals(other.from); 
+      assert coordinates.size() >= 2;
 
       double angle = Angle.angle(coordinates.get(0), coordinates.get(1));
       double angleOther = Angle.angle(other.coordinates.get(0), other.coordinates.get(1));
